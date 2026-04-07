@@ -1,0 +1,39 @@
+### --- Python Core --- ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+### --- Environments --- ###
+# Local virtual environments (should never be committed)
+.venv/
+env/
+venv/
+ENV/
+
+### --- Environment Variables --- ###
+# Private configuration and secrets
+.env
+
+### --- Databases --- ###
+# Exclude the local JSON database to keep the repository clean
+app/db/students.json
+
+### --- VS Code --- ###
+# Ignore all VS Code settings...
+.vscode/*
+# ...BUT keep the launch configuration as requested
+!.vscode/launch.json
+
+### --- Tools & Linting --- ###
+# Cache directories for various Python tools
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+### --- Distribution / Packaging --- ###
+# Build artifacts
+dist/
+build/
+*.egg-info/

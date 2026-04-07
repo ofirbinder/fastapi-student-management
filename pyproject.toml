@@ -1,0 +1,26 @@
+[tool.ruff]
+# The minimum Python version to support for linting and formatting
+target-version = "py312"
+
+# The maximum number of characters allowed per line
+line-length = 100
+
+[tool.ruff.lint]
+# List of enabled linting rule categories:
+select = [
+    "E",    # pycodestyle errors (standard PEP8 violations)
+    "F",    # Pyflakes (logic errors, unused imports/variables)
+    "I",    # isort (automatically sorts imports alphabetically)
+    "UP",   # pyupgrade (upgrades syntax to newer Python versions)
+    "B",    # flake8-bugbear (finds likely bugs and design flaws)
+]
+
+# List of specific rules to skip (currently empty)
+ignore = []
+
+[tool.ruff.format]
+# Use double quotes (") for strings unless they contain double quotes
+quote-style = "double"
+
+# Use spaces instead of tabs for indentation
+indent-style = "space"

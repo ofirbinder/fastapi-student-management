@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI: Development",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--reload"],
+      "env": {
+        "APP_ENV": "development"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "FastAPI: Production",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--reload"],
+      "env": {
+        "APP_ENV": "production"
+      },
+      "console": "integratedTerminal"
+    }
+  ]
+}
