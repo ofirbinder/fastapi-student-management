@@ -25,6 +25,6 @@ def read_db() -> list:
             raise ServerJsonParseError() from err
 
 
-def write_db(data: list):
+def write_db(data: list) -> None:
     with portalocker.Lock(settings.DATABASE_PATH, mode="w", encoding="utf-8", timeout=5) as f:
         json.dump(data, f, indent=4)

@@ -5,23 +5,21 @@
       "name": "FastAPI: Development",
       "type": "debugpy",
       "request": "launch",
-      "module": "uvicorn",
-      "args": ["app.main:app", "--reload"],
+      "program": "${workspaceFolder}/run.py",
+      "console": "integratedTerminal",
       "env": {
         "APP_ENV": "development"
-      },
-      "console": "integratedTerminal"
+      }
     },
     {
       "name": "FastAPI: Production",
       "type": "debugpy",
       "request": "launch",
-      "module": "uvicorn",
-      "args": ["app.main:app", "--reload"],
+      "program": "${workspaceFolder}/run.py",
+      "console": "integratedTerminal",
       "env": {
         "APP_ENV": "production"
-      },
-      "console": "integratedTerminal"
+      }
     }
   ]
 }

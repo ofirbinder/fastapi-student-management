@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.config import settings
-from app.core.exceptions import setup_exception_handlers
+from app.core.exceptions_backup import setup_exception_handlers
 from app.routers.api import api_router
 
 API_VERSION = settings.API_VERSION

@@ -14,7 +14,8 @@ ENV/
 
 ### --- Environment Variables --- ###
 # Private configuration and secrets
-.env
+.env*
+!.env.example
 
 ### --- Databases --- ###
 # Exclude the local JSON database to keep the repository clean

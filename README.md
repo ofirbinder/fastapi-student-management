@@ -68,10 +68,20 @@ This project implements a unique error-handling flow that distinguishes between:
    pip install -r requirements.txt
    ```
 
-4. **Run the server**:
+4. **Set up Environment Variables**:
+   Copy the example environment file and adjust it if necessary:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+5. **Run the server**:
+
    ```bash
    uvicorn main:app --reload
    ```
+
+> **Note**: The application uses `pathlib` for cross-platform compatibility. On the first run, the database file specified in `DATABASE_PATH` doesn't exist!
 
 The API will be available at `http://127.0.0.1:8000`
 Interactive docs: `http://127.0.0.1:8000/docs`

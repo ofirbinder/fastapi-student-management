@@ -1,26 +1,52 @@
 [tool.ruff]
-# The minimum Python version to support for linting and formatting
+# Target Python version for syntax upgrades and linting rules
 target-version = "py312"
 
-# The maximum number of characters allowed per line
+# Maximum number of characters allowed per line
 line-length = 100
 
-[tool.ruff.lint]
-# List of enabled linting rule categories:
+# Rule categories to enable
 select = [
-    "E",    # pycodestyle errors (standard PEP8 violations)
-    "F",    # Pyflakes (logic errors, unused imports/variables)
-    "I",    # isort (automatically sorts imports alphabetically)
-    "UP",   # pyupgrade (upgrades syntax to newer Python versions)
-    "B",    # flake8-bugbear (finds likely bugs and design flaws)
+    "E",    # pycodestyle errors: Standard PEP8 violations
+    "W",    # pycodestyle warnings: Standard PEP8 styling warnings
+    "F",    # Pyflakes: Logic errors, unused imports, or undefined variables
+    "I",    # isort: Automatically sorts and groups your imports alphabetically
+    "UP",   # pyupgrade: Suggests modern Python syntax (keeps code up-to-date)
+    "B",    # flake8-bugbear: Finds common bugs and design flaws
+    "N",    # pep8-naming: Ensures classes, functions, and variables follow PEP8 naming
+    "C4",   # flake8-comprehensions: Optimizes list, dict, and set comprehensions
+    "SIM",  # flake8-simplify: Suggests ways to simplify complex or redundant code
+    "TC",   # flake8-type-checking: Moves type-only imports into type-checking blocks
+    "ARG",  # flake8-unused-arguments: Flags function arguments that aren't used
+    "PTH",  # flake8-use-pathlib: Encourages modern pathlib instead of os.path
+    # "ANN" # flake8-annotations: Enforce type annotations for function return values (ANN200-series)
 ]
 
-# List of specific rules to skip (currently empty)
-ignore = []
+# Specific rules to ignore
+ignore = [
+    "E501", # Line length: Handled by the formatter, so we don't need a lint error
+    "B008", # Function calls in defaults: Allows FastAPI/Click to use Depends() etc.
+]
+
+# Files and directories to skip
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+[tool.ruff.isort]
+# Combines multiple 'from' imports from the same module into one line
+combine-as-imports = true
 
 [tool.ruff.format]
-# Use double quotes (") for strings unless they contain double quotes
+# Standardize string quotes to double (")
 quote-style = "double"
 
-# Use spaces instead of tabs for indentation
+# Use 4 spaces for indentation (Python standard)
 indent-style = "space"
+
+# Keeps trailing commas to make Git diffs cleaner and more readable
+skip-magic-trailing-comma = false

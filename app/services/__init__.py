@@ -1,1 +1,1 @@
-from .StudentsService import StudentsService  # noqa: F401
+from .students_service import StudentsService  # noqa: F401
