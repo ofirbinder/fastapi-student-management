@@ -1,0 +1,26 @@
+services:
+  api-dev:
+    build: .
+    container_name: students_api_dev
+    ports:
+      - '8000:8000'
+    env_file:
+      - .env
+    environment:
+      - ENV=development
+    volumes:
+      - .:/code
+    restart: always
+
+  api-prod:
+    build: .
+    container_name: students_api_prod
+    ports:
+      - '8080:8000'
+    env_file:
+      - .env
+    environment:
+      - ENV=production
+    volumes:
+      - ./data:/code/data
+    restart: always
