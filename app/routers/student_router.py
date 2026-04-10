@@ -3,7 +3,7 @@ from fastapi import APIRouter, Body, Depends, Path, status
 from app.models.api_response import APIResponse
 from app.models.course_schema import CourseSchema
 from app.models.enums import CourseCatalog
-from app.models.query_params import QueryParams
+from app.models.query_schema import QueryParams
 from app.models.student_schema import StudentSchema
 from app.models.student_update import StudentUpdate
 from app.services import StudentsService
@@ -15,7 +15,8 @@ router = APIRouter()
     "/",
     response_model=APIResponse[dict[str, list[StudentSchema]]],
     status_code=status.HTTP_200_OK,
-    # response_model_exclude_none=True,
+    summary="Get all students",
+    description="Retrieve a paginated and sorted list of all students.",
 )
 def get_all_students(query_params: QueryParams = Depends()):
     return StudentsService.get_all_students(query_params)
@@ -25,7 +26,7 @@ def get_all_students(query_params: QueryParams = Depends()):
     "/{id}",
     response_model=APIResponse[dict[str, StudentSchema]],
     status_code=status.HTTP_200_OK,
-    # response_model_exclude_none=True,
+    summary="Get student by ID",
 )
 def get_student(id: str = Path(...)):
     return StudentsService.get_student(id)
@@ -35,7 +36,8 @@ def get_student(id: str = Path(...)):
     "/",
     response_model=APIResponse[dict[str, StudentSchema]],
     status_code=status.HTTP_201_CREATED,
-    # response_model_exclude_none=True,
+    summary="Create a new student",
+    description="Registers a new student in the system with their address and initial courses.",
 )
 def create_student(student: StudentSchema):
     return StudentsService.create_student(student)
@@ -45,7 +47,8 @@ def create_student(student: StudentSchema):
     "/{id}/courses",
     response_model=APIResponse[dict[str, StudentSchema]],
     status_code=status.HTTP_200_OK,
-    # response_model_exclude_none=True,
+    summary="Add courses to student",
+    description="Add one or multiple courses to an existing student's record.",
 )
 def add_courses(
     id: str = Path(...), courses: CourseSchema | list[CourseSchema] = Body(..., embed=True)
@@ -57,7 +60,8 @@ def add_courses(
     "/{id}",
     response_model=APIResponse[dict[str, StudentSchema]],
     status_code=status.HTTP_200_OK,
-    # response_model_exclude_none=True,
+    summary="Update student details",
+    description="Partially update student information like name or address.",
 )
 def update_student(id: str = Path(...), student_data: StudentUpdate = Body(...)):
     return StudentsService.update_student(id, student_data)
@@ -67,7 +71,8 @@ def update_student(id: str = Path(...), student_data: StudentUpdate = Body(...))
     "/{id}/courses",
     response_model=APIResponse[dict[str, StudentSchema]],
     status_code=status.HTTP_200_OK,
-    # response_model_exclude_none=True,
+    summary="Update student course",
+    description="Update of a specific course for a student.",
 )
 def update_course(id: str = Path(...), course_data: CourseSchema = Body(..., embed=True)):
     return StudentsService.update_course(id, course_data)
@@ -76,6 +81,8 @@ def update_course(id: str = Path(...), course_data: CourseSchema = Body(..., emb
 @router.delete(
     "/{id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a student",
+    description="Permanently remove a student and all their associated data from the system.",
 )
 def delete_student(id: str = Path(...)):
     StudentsService.delete_student(id)
@@ -84,6 +91,8 @@ def delete_student(id: str = Path(...)):
 @router.delete(
     "/{id}/courses/{course_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    summary="Remove a course from student",
+    description="Remove a specific course enrollment from a student's profile.",
 )
 def delete_course_from_student(id: str = Path(...), course_id: CourseCatalog = Path(...)):
     StudentsService.delete_course(id, course_id)

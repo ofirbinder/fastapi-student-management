@@ -20,8 +20,8 @@ class AppError(Exception):
         self.is_operational = is_operational
 
         if not IS_PROD:
-            self.stack_trace = self._get_stack_trace()
             self.error_type = self._determine_error_type()
+            self.stack_trace = self._get_stack_trace()
 
     def _determine_error_type(self) -> str:
         _, exc_value, _ = sys.exc_info()

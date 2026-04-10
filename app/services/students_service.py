@@ -7,7 +7,7 @@ from app.core.DomainError import DuplicateEntryError, InvalidActionError
 from app.models.api_response import APIResponse
 from app.models.course_schema import CourseSchema
 from app.models.enums import CourseCatalog
-from app.models.query_params import QueryParams
+from app.models.query_schema import QueryParams
 from app.models.student_schema import StudentSchema
 from app.models.student_update import StudentUpdate
 from app.utils import validators

@@ -8,7 +8,12 @@ API_VERSION = settings.API_VERSION
 DATABASE_PATH = settings.DATABASE_PATH
 ENV = settings.ENV
 
-app = FastAPI(title="Students API")
+app = FastAPI(
+    title="Students API",
+    description="API for managing students records and majors.",
+    version=f"{API_VERSION}v",
+)
+
 setup_exception_handlers(app)
 
 
