@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     environment:
-      - ENV=development
+      - APP_ENV=development
     volumes:
       - .:/code
     restart: always
@@ -20,7 +20,7 @@ services:
     env_file:
       - .env
     environment:
-      - ENV=production
+      - APP_ENV=production
     volumes:
       - ./data:/code/data
     restart: always
