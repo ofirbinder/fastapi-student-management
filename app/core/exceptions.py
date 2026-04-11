@@ -114,5 +114,11 @@ async def file_locked_handler(_request: Request, _exc: portalocker.exceptions.Lo
 
 
 async def http_exc_handler(_request: Request, _exc: StarletteHTTPException):
-    error = AppError(status_code=_exc.status_code, message=_exc.detail)
+    if _exc.status_code == 404:
+        message = f"Route '{_request.url.path}' not found."
+    elif _exc.status_code == 405:
+        message = f"Method '{_request.method}' is not allowed for this route."
+    else:
+        message = _exc.detail
+    error = AppError(status_code=_exc.status_code, message=message)
     return JSONResponse(status_code=error.status_code, content=error.to_response())

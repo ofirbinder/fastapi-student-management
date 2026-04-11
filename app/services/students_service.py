@@ -170,7 +170,7 @@ class StudentsService:
 
         if course_idx is None:
             raise InvalidActionError(
-                message=f"Student {id} is not enrolled in course {target_course_name}"
+                message=f"Student {id} is not enrolled to course {target_course_name}"
             )
         updated_course_dict = jsonable_encoder(course_data.model_dump(exclude_computed_fields=True))
 

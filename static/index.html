@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Students API Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #0f172a;
+        color: #f8fafc;
+        font-family: 'Inter', sans-serif;
+      }
+
+      /* --- Editor Core Styles --- */
+      .editor-container {
+        position: relative;
+        min-height: 250px;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      #json-input,
+      #highlight-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 12px;
+        font-family: 'Fira Code', monospace !important;
+        font-size: 14px !important;
+        line-height: 1.5 !important;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        box-sizing: border-box;
+      }
+
+      #json-input {
+        color: transparent;
+        background: transparent;
+        caret-color: #38bdf8;
+        z-index: 2;
+        resize: none;
+        outline: none;
+        border: none;
+        overflow-y: auto;
+      }
+
+      #highlight-overlay {
+        z-index: 1;
+        pointer-events: none;
+        color: #f8fafc;
+        overflow-y: hidden;
+      }
+
+      /* JSON Highlighting Colors */
+      .json-key {
+        color: #f87171;
+      }
+      .json-string {
+        color: #4ade80;
+      }
+      .json-number {
+        color: #fbbf24;
+      }
+      .json-boolean {
+        color: #818cf8;
+      }
+      .json-null {
+        color: #94a3b8;
+      }
+
+      /* UI Components */
+      .endpoint-card {
+        transition: all 0.2s;
+        cursor: pointer;
+        border-left: 4px solid transparent;
+      }
+      .endpoint-card:hover {
+        transform: translateX(5px);
+        background-color: #1e293b;
+        border-left-color: #38bdf8;
+      }
+      .custom-scroll::-webkit-scrollbar {
+        width: 8px;
+      }
+      .custom-scroll::-webkit-scrollbar-track {
+        background: #1e293b;
+      }
+      .custom-scroll::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+      <header
+        class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4"
+      >
+        <div>
+          <h1 class="text-3xl font-bold text-sky-400">Students API Hub</h1>
+          <p class="text-slate-400 text-sm mt-1 font-mono">
+            Prefix: <span id="current-prefix" class="text-amber-400"></span>
+          </p>
+        </div>
+        <span
+          class="bg-sky-500/10 text-sky-400 px-3 py-1 rounded-full text-xs border border-sky-500/20 uppercase tracking-widest"
+          >Live Editor Mode</span
+        >
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-4 space-y-4">
+          <h2 class="text-xl font-semibold mb-2">Quick Select</h2>
+          <div
+            id="reference-list"
+            class="space-y-2 max-h-[700px] overflow-y-auto pr-2 custom-scroll"
+          ></div>
+        </div>
+
+        <div class="lg:col-span-8 space-y-6">
+          <div
+            class="bg-slate-800 p-6 rounded-xl shadow-2xl border border-slate-700"
+          >
+            <div class="flex justify-between items-center mb-4">
+              <h3
+                class="font-medium text-slate-300 text-xs uppercase tracking-wider"
+              >
+                Request Editor
+              </h3>
+              <button
+                onclick="beautify()"
+                class="text-xs bg-sky-600 hover:bg-sky-500 px-3 py-1.5 rounded transition font-bold"
+              >
+                Format JSON
+              </button>
+            </div>
+
+            <div class="space-y-3 mb-4">
+              <div class="flex gap-2">
+                <span
+                  class="bg-slate-900 border border-slate-700 rounded p-2 text-slate-500 text-sm font-mono flex items-center"
+                  >/api/v1</span
+                >
+                <input
+                  id="url-path"
+                  type="text"
+                  placeholder="/students/"
+                  class="flex-grow bg-slate-900 border border-slate-700 rounded p-2 text-sky-300 focus:outline-none font-mono"
+                />
+              </div>
+              <div class="flex gap-2 items-center">
+                <span
+                  class="text-xs font-bold text-slate-500 uppercase w-16 text-center"
+                  >Params</span
+                >
+                <input
+                  id="url-params"
+                  type="text"
+                  placeholder="page=1&limit=10&sort_by=-created_at"
+                  class="flex-grow bg-slate-900 border border-slate-700 rounded p-1.5 text-amber-400 focus:outline-none font-mono text-sm"
+                />
+              </div>
+            </div>
+
+            <div class="editor-container mb-4">
+              <pre id="highlight-overlay"></pre>
+              <textarea
+                id="json-input"
+                spellcheck="false"
+                oninput="updateEditorHighlight()"
+                onscroll="syncScroll()"
+                onkeydown="handleTab(event)"
+              ></textarea>
+            </div>
+
+            <div class="grid grid-cols-4 gap-3">
+              <button
+                onclick="sendRequest('GET')"
+                class="bg-blue-600 hover:bg-blue-500 py-2 rounded font-bold transition"
+              >
+                GET
+              </button>
+              <button
+                onclick="sendRequest('POST')"
+                class="bg-emerald-600 hover:bg-emerald-500 py-2 rounded font-bold transition"
+              >
+                POST
+              </button>
+              <button
+                onclick="sendRequest('PATCH')"
+                class="bg-amber-600 hover:bg-amber-500 py-2 rounded font-bold transition"
+              >
+                PATCH
+              </button>
+              <button
+                onclick="sendRequest('DELETE')"
+                class="bg-red-600 hover:bg-red-500 py-2 rounded font-bold transition"
+              >
+                DELETE
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="bg-slate-800 p-6 rounded-xl shadow-2xl border border-slate-700"
+          >
+            <div class="flex justify-between items-center mb-4">
+              <h3
+                class="font-medium text-slate-300 text-xs uppercase tracking-wider"
+              >
+                Response
+              </h3>
+              <div
+                id="status-badge"
+                class="text-xs font-mono px-3 py-1 rounded bg-slate-900"
+              >
+                Status: ---
+              </div>
+            </div>
+            <pre
+              id="json-output"
+              class="w-full bg-slate-900 border border-slate-700 rounded p-4 text-sm overflow-auto min-h-[150px] max-h-[400px] custom-scroll whitespace-pre-wrap"
+            ></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_PREFIX = '/api/v1';
+      document.getElementById('current-prefix').innerText = API_PREFIX;
+
+      // --- Core Logic ---
+      function syntaxHighlight(json) {
+        if (typeof json !== 'string') json = JSON.stringify(json, undefined, 4);
+        return json
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(
+            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+            function (match) {
+              let cls = 'json-number';
+              if (/^"/.test(match)) {
+                cls = /:$/.test(match) ? 'json-key' : 'json-string';
+              } else if (/true|false/.test(match)) {
+                cls = 'json-boolean';
+              } else if (/null/.test(match)) {
+                cls = 'json-null';
+              }
+              return `<span class="${cls}">${match}</span>`;
+            },
+          );
+      }
+
+      function updateEditorHighlight() {
+        const textarea = document.getElementById('json-input');
+        const overlay = document.getElementById('highlight-overlay');
+        overlay.innerHTML = syntaxHighlight(textarea.value);
+        syncScroll();
+      }
+
+      function syncScroll() {
+        const textarea = document.getElementById('json-input');
+        const overlay = document.getElementById('highlight-overlay');
+        overlay.scrollTop = textarea.scrollTop;
+        overlay.scrollLeft = textarea.scrollLeft;
+      }
+
+      function handleTab(e) {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = e.target.selectionStart;
+          const end = e.target.selectionEnd;
+          e.target.value =
+            e.target.value.substring(0, start) +
+            '    ' +
+            e.target.value.substring(end);
+          e.target.selectionStart = e.target.selectionEnd = start + 4;
+          updateEditorHighlight();
+        }
+      }
+
+      // --- API Setup ---
+      const endpoints = [
+        {
+          method: 'GET',
+          path: '/students/',
+          desc: 'List All',
+          params: 'page=1&limit=10&sort_by=-created_at',
+        },
+        {
+          method: 'POST',
+          path: '/students/',
+          desc: 'Create',
+          body: {
+            id: 'ST-022',
+            name: 'New Student',
+            birth_date: '2000-01-01',
+            address: {
+              city: 'Haifa',
+              street: 'Hagalil',
+              house_number: 10,
+              zip_code: '1234567',
+            },
+            courses: [],
+          },
+        },
+        { method: 'GET', path: '/students/{id}', desc: 'Get ID' },
+        {
+          method: 'PATCH',
+          path: '/students/{id}',
+          desc: 'Update',
+          body: { name: 'Updated Name' },
+        },
+        { method: 'DELETE', path: '/students/{id}', desc: 'Delete' },
+        {
+          method: 'POST',
+          path: '/students/{id}/courses',
+          desc: 'Add Courses',
+          body: [
+            { name: 'PYTHON', grade: 100 },
+            { name: 'DATABASE', grade: 87 },
+          ],
+        },
+        {
+          method: 'PATCH',
+          path: '/students/{id}/courses',
+          desc: 'Update Grade',
+          body: { course_data: { name: 'PYTHON', grade: 100 } },
+        },
+        {
+          method: 'DELETE',
+          path: '/students/{id}/courses/{course_id}',
+          desc: 'Remove Course',
+        },
+      ];
+
+      const refList = document.getElementById('reference-list');
+      endpoints.forEach(ep => {
+        const div = document.createElement('div');
+        div.className =
+          'endpoint-card bg-slate-800/40 p-3 rounded border border-slate-700 shadow-sm';
+        const mCol = {
+          GET: 'text-blue-400',
+          POST: 'text-emerald-400',
+          PATCH: 'text-amber-400',
+          DELETE: 'text-red-400',
+        }[ep.method];
+        div.onclick = () => {
+          document.getElementById('url-path').value = ep.path;
+          document.getElementById('url-params').value = ep.params || '';
+          document.getElementById('json-input').value = ep.body
+            ? JSON.stringify(ep.body, null, 4)
+            : '';
+          updateEditorHighlight();
+        };
+        div.innerHTML = `<div class="flex justify-between items-start"><span class="font-bold text-xs ${mCol}">${ep.method}</span><span class="text-[10px] text-slate-500 italic">${ep.desc}</span></div><div class="text-sm font-mono text-slate-300 mt-1 truncate">${ep.path}</div>`;
+        refList.appendChild(div);
+      });
+
+      async function sendRequest(method) {
+        const path = document.getElementById('url-path').value;
+        const params = document.getElementById('url-params').value;
+        const fullPath =
+          API_PREFIX +
+          path +
+          (params ? (params.startsWith('?') ? '' : '?') + params : '');
+        const bodyInput = document.getElementById('json-input').value;
+        const output = document.getElementById('json-output');
+        const badge = document.getElementById('status-badge');
+
+        output.innerHTML =
+          '<span class="text-sky-400 animate-pulse">Running...</span>';
+
+        try {
+          const res = await fetch(fullPath, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body:
+              method !== 'GET' && method !== 'DELETE' && bodyInput
+                ? bodyInput
+                : null,
+          });
+
+          const data = res.status !== 204 ? await res.json() : '';
+          badge.innerText = `Status: ${res.status}`;
+          badge.className = `text-xs font-mono px-3 py-1 rounded bg-slate-900 border ${res.ok ? 'text-green-400 border-green-500/30' : 'text-red-400 border-red-500/30'}`;
+          output.innerHTML = syntaxHighlight(data);
+        } catch (err) {
+          output.innerHTML = `<span class="text-red-500">Error: ${err.message}</span>`;
+        }
+      }
+
+      function beautify() {
+        const el = document.getElementById('json-input');
+        try {
+          el.value = JSON.stringify(JSON.parse(el.value), null, 4);
+          updateEditorHighlight();
+        } catch (e) {
+          alert('Invalid JSON');
+        }
+      }
+
+      window.onload = updateEditorHighlight;
+    </script>
+  </body>
+</html>

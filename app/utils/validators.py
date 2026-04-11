@@ -15,7 +15,10 @@ def validate_no_duplicate_courses(
     input_duplicates = []
 
     for course in new_courses:
-        name = course.name.value if hasattr(course.name, "value") else course["name"]
+        if isinstance(course, dict):
+            name = course.get("name")
+        else:
+            name = course.name.value if hasattr(course.name, "value") else course.name
 
         if name in seen:
             input_duplicates.append(name)
@@ -26,11 +29,15 @@ def validate_no_duplicate_courses(
             f"Input error: The following courses appear multiple times in your request: {input_duplicates}"
         )
 
-    existing_names = {c["name"] if isinstance(c, dict) else c.name.value for c in existing_courses}
+    existing_names = {
+        c["name"] if isinstance(c, dict) else (c.name.value if hasattr(c.name, "value") else c.name)
+        for c in existing_courses
+    }
 
-    for name in seen:
-        if name in existing_names:
-            raise StudentAlreadyEnrolledError(student_id, name)
+    existing_duplicates = [name for name in seen if name in existing_names]
+
+    if existing_duplicates:
+        raise StudentAlreadyEnrolledError(student_id, existing_duplicates)
 
 
 def find_student_index(raw_data: list, student_id: str) -> int:

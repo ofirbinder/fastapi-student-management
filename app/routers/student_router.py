@@ -50,9 +50,7 @@ def create_student(student: StudentSchema):
     summary="Add courses to student",
     description="Add one or multiple courses to an existing student's record.",
 )
-def add_courses(
-    id: str = Path(...), courses: CourseSchema | list[CourseSchema] = Body(..., embed=True)
-):
+def add_courses(id: str = Path(...), courses: list[CourseSchema] = Body(...)):
     return StudentsService.add_courses(id, courses)
 
 
@@ -74,7 +72,7 @@ def update_student(id: str = Path(...), student_data: StudentUpdate = Body(...))
     summary="Update student course",
     description="Update of a specific course for a student.",
 )
-def update_course(id: str = Path(...), course_data: CourseSchema = Body(..., embed=True)):
+def update_course(id: str = Path(...), course_data: CourseSchema = Body(...)):
     return StudentsService.update_course(id, course_data)
 
 

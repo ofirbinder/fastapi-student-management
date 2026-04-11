@@ -6,3 +6,4 @@ class CourseCatalog(Enum):
     JAVASCRIPT = "JAVASCRIPT"
     DATABASE = "DATABASE"
     DEVOPS = "DEVOPS"
+    DOCKER = "DOCKER"

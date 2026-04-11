@@ -1,0 +1,24 @@
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   Dockerfile
+	deleted:    app/core/exceptions_backup.py
+	deleted:    app/core/execptions.py
+	modified:   app/main.py
+	modified:   app/models/app_base_model.py
+	modified:   app/models/enums.py
+	modified:   app/models/student_schema.py
+	modified:   app/routers/student_router.py
+	modified:   app/services/students_service.py
+	modified:   app/utils/validators.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	app/core/exceptions.py
+	pbcopy
+	static/
+
+no changes added to commit (use "git add" and/or "git commit -a")

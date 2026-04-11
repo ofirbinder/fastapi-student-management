@@ -29,13 +29,15 @@ class StudentSchema(AppBaseModel):
     )
     address: AddressSchema = Field(..., description="Physical residential address")
     is_active: bool = Field(
-        True, description="Whether the student is currently active in the system"
+        default=True,
+        description="Whether the student is currently active in the system",
+        validate_default=True,
     )
     courses: list[CourseSchema] = Field(
         default_factory=list,
         description=f"List of courses the student is enrolled in {[c.value for c in CourseCatalog]}",
     )
-    created_at: datetime | None = Field(
+    created_at: datetime = Field(
         default_factory=datetime.now,
         frozen=True,
         validate_default=True,
@@ -49,8 +51,3 @@ class StudentSchema(AppBaseModel):
         student_id = info.data.get("id", "Unknown")
         validators.validate_no_duplicate_courses(new_courses=courses, student_id=student_id)
         return courses
-
-    @field_validator("created_at", mode="before")
-    @classmethod
-    def ignore_user_input(cls, v):
-        return None
