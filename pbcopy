@@ -1,24 +1,286 @@
-On branch main
-Your branch is up to date with 'origin/main'.
-
-Changes not staged for commit:
-  (use "git add/rm <file>..." to update what will be committed)
-  (use "git restore <file>..." to discard changes in working directory)
-	modified:   Dockerfile
-	deleted:    app/core/exceptions_backup.py
-	deleted:    app/core/execptions.py
-	modified:   app/main.py
-	modified:   app/models/app_base_model.py
-	modified:   app/models/enums.py
-	modified:   app/models/student_schema.py
-	modified:   app/routers/student_router.py
-	modified:   app/services/students_service.py
-	modified:   app/utils/validators.py
-
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-	app/core/exceptions.py
-	pbcopy
-	static/
-
-no changes added to commit (use "git add" and/or "git commit -a")
+diff --git a/app/core/APIFeatures.py b/app/core/APIFeatures.py
+index cafdbcb..1972f4b 100644
+--- a/app/core/APIFeatures.py
++++ b/app/core/APIFeatures.py
+@@ -1,5 +1,5 @@
+ from app.core.DomainError import InvalidAPIFeaturesParamsError
+-from app.models.student_schema import StudentSchema
++from app.models.student_in_db import StudentInDB
+ 
+ 
+ class APIFeatures:
+@@ -17,7 +17,7 @@ class APIFeatures:
+             )
+         reverse = sort_by.startswith("-")
+         field = sort_by.lstrip("-")
+-        if field not in StudentSchema.model_fields:
++        if field not in StudentInDB.model_fields:
+             raise InvalidAPIFeaturesParamsError(
+                 f"Field '{field}' does not exist on student schema!"
+             )
+diff --git a/app/models/query_schema.py b/app/models/query_schema.py
+index 39bd1bf..c413b3d 100644
+--- a/app/models/query_schema.py
++++ b/app/models/query_schema.py
+@@ -15,4 +15,5 @@ class QueryParams(AppBaseModel):
+             "Supported fields: id, name, birth_date, is_active, created_at."
+         ),
+         examples=["name", "-created_at"],
++        alias="sort_by",
+     )
+diff --git a/app/models/student_schema.py b/app/models/student_schema.py
+index d748fc2..dfe1265 100644
+--- a/app/models/student_schema.py
++++ b/app/models/student_schema.py
+@@ -1,4 +1,4 @@
+-from datetime import date, datetime
++from datetime import date
+ 
+ from pydantic import Field, ValidationInfo, field_validator
+ 
+@@ -28,22 +28,10 @@ class StudentSchema(AppBaseModel):
+         ..., description="Student's date of birth (YYYY-MM-DD)", examples=["1995-05-15"]
+     )
+     address: AddressSchema = Field(..., description="Physical residential address")
+-    is_active: bool = Field(
+-        default=True,
+-        description="Whether the student is currently active in the system",
+-        validate_default=True,
+-    )
+     courses: list[CourseSchema] = Field(
+         default_factory=list,
+         description=f"List of courses the student is enrolled in {[c.value for c in CourseCatalog]}",
+     )
+-    created_at: datetime = Field(
+-        default_factory=datetime.now,
+-        frozen=True,
+-        validate_default=True,
+-        description="Record creation timestamp (Auto-generated, user input is ignored)",
+-        examples=["2026-04-10T15:30:00"],
+-    )
+ 
+     @field_validator("courses")
+     @classmethod
+diff --git a/app/routers/student_router.py b/app/routers/student_router.py
+index 37fd572..0c2fefc 100644
+--- a/app/routers/student_router.py
++++ b/app/routers/student_router.py
+@@ -4,6 +4,7 @@ from app.models.api_response import APIResponse
+ from app.models.course_schema import CourseSchema
+ from app.models.enums import CourseCatalog
+ from app.models.query_schema import QueryParams
++from app.models.student_in_db import StudentInDB
+ from app.models.student_schema import StudentSchema
+ from app.models.student_update import StudentUpdate
+ from app.services import StudentsService
+@@ -13,7 +14,7 @@ router = APIRouter()
+ 
+ @router.get(
+     "/",
+-    response_model=APIResponse[dict[str, list[StudentSchema]]],
++    response_model=APIResponse[dict[str, list[StudentInDB]]],
+     status_code=status.HTTP_200_OK,
+     summary="Get all students",
+     description="Retrieve a paginated and sorted list of all students.",
+@@ -24,7 +25,7 @@ def get_all_students(query_params: QueryParams = Depends()):
+ 
+ @router.get(
+     "/{id}",
+-    response_model=APIResponse[dict[str, StudentSchema]],
++    response_model=APIResponse[dict[str, StudentInDB]],
+     status_code=status.HTTP_200_OK,
+     summary="Get student by ID",
+ )
+@@ -34,7 +35,7 @@ def get_student(id: str = Path(...)):
+ 
+ @router.post(
+     "/",
+-    response_model=APIResponse[dict[str, StudentSchema]],
++    response_model=APIResponse[dict[str, StudentInDB]],
+     status_code=status.HTTP_201_CREATED,
+     summary="Create a new student",
+     description="Registers a new student in the system with their address and initial courses.",
+@@ -45,7 +46,7 @@ def create_student(student: StudentSchema):
+ 
+ @router.post(
+     "/{id}/courses",
+-    response_model=APIResponse[dict[str, StudentSchema]],
++    response_model=APIResponse[dict[str, StudentInDB]],
+     status_code=status.HTTP_200_OK,
+     summary="Add courses to student",
+     description="Add one or multiple courses to an existing student's record.",
+@@ -56,7 +57,7 @@ def add_courses(id: str = Path(...), courses: list[CourseSchema] = Body(...)):
+ 
+ @router.patch(
+     "/{id}",
+-    response_model=APIResponse[dict[str, StudentSchema]],
++    response_model=APIResponse[dict[str, StudentInDB]],
+     status_code=status.HTTP_200_OK,
+     summary="Update student details",
+     description="Partially update student information like name or address.",
+@@ -67,7 +68,7 @@ def update_student(id: str = Path(...), student_data: StudentUpdate = Body(...))
+ 
+ @router.patch(
+     "/{id}/courses",
+-    response_model=APIResponse[dict[str, StudentSchema]],
++    response_model=APIResponse[dict[str, StudentInDB]],
+     status_code=status.HTTP_200_OK,
+     summary="Update student course",
+     description="Update of a specific course for a student.",
+diff --git a/app/services/students_service.py b/app/services/students_service.py
+index e0b786f..d2f05a8 100644
+--- a/app/services/students_service.py
++++ b/app/services/students_service.py
+@@ -8,6 +8,7 @@ from app.models.api_response import APIResponse
+ from app.models.course_schema import CourseSchema
+ from app.models.enums import CourseCatalog
+ from app.models.query_schema import QueryParams
++from app.models.student_in_db import StudentInDB
+ from app.models.student_schema import StudentSchema
+ from app.models.student_update import StudentUpdate
+ from app.utils import validators
+@@ -18,9 +19,13 @@ class StudentsService:
+     def get_all_students(params: QueryParams):
+         raw_data = read_db()
+ 
+-        features = APIFeatures(raw_data, params.model_dump()).sort().paginate()
++        validated_data = [
++            StudentInDB.model_validate(item).model_dump(by_alias=False) for item in raw_data
++        ]
++
++        features = APIFeatures(validated_data, params.model_dump()).sort().paginate()
+ 
+-        students = [StudentSchema.model_validate(item) for item in features.results]
++        students = features.results
+ 
+         return APIResponse(
+             data={"students": students},
+@@ -33,7 +38,7 @@ class StudentsService:
+ 
+         student_idx = validators.find_student_index(raw_data=raw_data, student_id=id)
+ 
+-        student = StudentSchema.model_validate(raw_data[student_idx])
++        student = StudentInDB.model_validate(raw_data[student_idx])
+ 
+         return APIResponse(data={"student": student})
+ 
+@@ -45,24 +50,22 @@ class StudentsService:
+             raise DuplicateEntryError(
+                 f"Student with this ID {student.id}, is already exists on the system!"
+             )
++        full_student = StudentInDB(**student.model_dump(exclude_computed_fields=True))
+ 
+-        new_student_data = jsonable_encoder(student.model_dump(exclude_computed_fields=True))
++        new_student_data = jsonable_encoder(full_student)
+         raw_data.append(new_student_data)
+ 
+         write_db(raw_data)
+         return APIResponse(
+             status_code=status.HTTP_201_CREATED,
+-            data={"student": student},
++            data={"student": full_student},
+         )
+ 
+     @staticmethod
+-    def add_courses(id: str, new_courses: CourseSchema | list[CourseSchema]):
++    def add_courses(id: str, new_courses: list[CourseSchema]):
+         raw_data = read_db()
+         student_idx = validators.find_student_index(raw_data=raw_data, student_id=id)
+ 
+-        if not isinstance(new_courses, list):
+-            new_courses = [new_courses]
+-
+         existing_courses_raw = raw_data[student_idx].get("courses", [])
+         validators.validate_no_duplicate_courses(new_courses, existing_courses_raw, id)
+ 
+@@ -71,7 +74,7 @@ class StudentsService:
+         )
+ 
+         raw_data[student_idx].setdefault("courses", []).extend(new_courses_encoded)
+-        updated_student = StudentSchema.model_validate(raw_data[student_idx])
++        updated_student = StudentInDB.model_validate(raw_data[student_idx])
+ 
+         write_db(raw_data)
+ 
+@@ -86,7 +89,9 @@ class StudentsService:
+         student_idx = validators.find_student_index(raw_data=raw_data, student_id=id)
+ 
+         # 3) Set student to Pydantic object with model_dump(exclude_unset, exclude_computed_fields)
+-        update_payload = student.model_dump(exclude_unset=True, exclude_computed_fields=True)
++        update_payload = student.model_dump(
++            exclude_unset=True, exclude_computed_fields=True, exclude_none=True
++        )
+ 
+         # 4) Verify if client ask to update courses that he didn't enrolled any course yet
+         if "courses" in update_payload:
+@@ -111,7 +116,7 @@ class StudentsService:
+         sanitized_update = jsonable_encoder(update_payload)
+         raw_data[student_idx].update(sanitized_update)
+ 
+-        validated_student = StudentSchema.model_validate(raw_data[student_idx])
++        validated_student = StudentInDB.model_validate(raw_data[student_idx])
+         # 7) Write it to DB
+         write_db(raw_data)
+ 
+@@ -153,6 +158,7 @@ class StudentsService:
+ 
+         write_db(raw_data)
+ 
++    # TODO
+     @staticmethod
+     def update_course(id: str, course_data: CourseSchema):
+         raw_data = read_db()
+@@ -175,7 +181,7 @@ class StudentsService:
+         updated_course_dict = jsonable_encoder(course_data.model_dump(exclude_computed_fields=True))
+ 
+         raw_data[student_idx]["courses"][course_idx] = updated_course_dict
+-        validated_student = StudentSchema.model_validate(raw_data[student_idx])
++        validated_student = StudentInDB.model_validate(raw_data[student_idx])
+ 
+         write_db(raw_data)
+ 
+diff --git a/pbcopy b/pbcopy
+index 032ca4e..a256bfe 100644
+--- a/pbcopy
++++ b/pbcopy
+@@ -1,24 +0,0 @@
+-On branch main
+-Your branch is up to date with 'origin/main'.
+-
+-Changes not staged for commit:
+-  (use "git add/rm <file>..." to update what will be committed)
+-  (use "git restore <file>..." to discard changes in working directory)
+-	modified:   Dockerfile
+-	deleted:    app/core/exceptions_backup.py
+-	deleted:    app/core/execptions.py
+-	modified:   app/main.py
+-	modified:   app/models/app_base_model.py
+-	modified:   app/models/enums.py
+-	modified:   app/models/student_schema.py
+-	modified:   app/routers/student_router.py
+-	modified:   app/services/students_service.py
+-	modified:   app/utils/validators.py
+-
+-Untracked files:
+-  (use "git add <file>..." to include in what will be committed)
+-	app/core/exceptions.py
+-	pbcopy
+-	static/
+-
+-no changes added to commit (use "git add" and/or "git commit -a")
+diff --git a/static/index.html b/static/index.html
+index 3bb57aa..83fcd88 100644
+--- a/static/index.html
++++ b/static/index.html
+@@ -337,7 +337,10 @@
+           method: 'PATCH',
+           path: '/students/{id}/courses',
+           desc: 'Update Grade',
+-          body: { course_data: { name: 'PYTHON', grade: 100 } },
++          body: {
++            name: 'PYTHON',
++            grade: 54,
++          },
+         },
+         {
+           method: 'DELETE',

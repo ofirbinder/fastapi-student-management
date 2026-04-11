@@ -8,6 +8,7 @@ from app.models.api_response import APIResponse
 from app.models.course_schema import CourseSchema
 from app.models.enums import CourseCatalog
 from app.models.query_schema import QueryParams
+from app.models.student_in_db import StudentInDB
 from app.models.student_schema import StudentSchema
 from app.models.student_update import StudentUpdate
 from app.utils import validators
@@ -18,9 +19,13 @@ class StudentsService:
     def get_all_students(params: QueryParams):
         raw_data = read_db()
 
-        features = APIFeatures(raw_data, params.model_dump()).sort().paginate()
+        validated_data = [
+            StudentInDB.model_validate(item).model_dump(by_alias=False) for item in raw_data
+        ]
 
-        students = [StudentSchema.model_validate(item) for item in features.results]
+        features = APIFeatures(validated_data, params.model_dump()).sort().paginate()
+
+        students = features.results
 
         return APIResponse(
             data={"students": students},
@@ -33,7 +38,7 @@ class StudentsService:
 
         student_idx = validators.find_student_index(raw_data=raw_data, student_id=id)
 
-        student = StudentSchema.model_validate(raw_data[student_idx])
+        student = StudentInDB.model_validate(raw_data[student_idx])
 
         return APIResponse(data={"student": student})
 
@@ -45,23 +50,21 @@ class StudentsService:
             raise DuplicateEntryError(
                 f"Student with this ID {student.id}, is already exists on the system!"
             )
+        full_student = StudentInDB(**student.model_dump(exclude_computed_fields=True))
 
-        new_student_data = jsonable_encoder(student.model_dump(exclude_computed_fields=True))
+        new_student_data = jsonable_encoder(full_student)
         raw_data.append(new_student_data)
 
         write_db(raw_data)
         return APIResponse(
             status_code=status.HTTP_201_CREATED,
-            data={"student": student},
+            data={"student": full_student},
         )
 
     @staticmethod
-    def add_courses(id: str, new_courses: CourseSchema | list[CourseSchema]):
+    def add_courses(id: str, new_courses: list[CourseSchema]):
         raw_data = read_db()
         student_idx = validators.find_student_index(raw_data=raw_data, student_id=id)
-
-        if not isinstance(new_courses, list):
-            new_courses = [new_courses]
 
         existing_courses_raw = raw_data[student_idx].get("courses", [])
         validators.validate_no_duplicate_courses(new_courses, existing_courses_raw, id)
@@ -71,7 +74,7 @@ class StudentsService:
         )
 
         raw_data[student_idx].setdefault("courses", []).extend(new_courses_encoded)
-        updated_student = StudentSchema.model_validate(raw_data[student_idx])
+        updated_student = StudentInDB.model_validate(raw_data[student_idx])
 
         write_db(raw_data)
 
@@ -86,7 +89,9 @@ class StudentsService:
         student_idx = validators.find_student_index(raw_data=raw_data, student_id=id)
 
         # 3) Set student to Pydantic object with model_dump(exclude_unset, exclude_computed_fields)
-        update_payload = student.model_dump(exclude_unset=True, exclude_computed_fields=True)
+        update_payload = student.model_dump(
+            exclude_unset=True, exclude_computed_fields=True, exclude_none=True
+        )
 
         # 4) Verify if client ask to update courses that he didn't enrolled any course yet
         if "courses" in update_payload:
@@ -111,7 +116,7 @@ class StudentsService:
         sanitized_update = jsonable_encoder(update_payload)
         raw_data[student_idx].update(sanitized_update)
 
-        validated_student = StudentSchema.model_validate(raw_data[student_idx])
+        validated_student = StudentInDB.model_validate(raw_data[student_idx])
         # 7) Write it to DB
         write_db(raw_data)
 
@@ -153,6 +158,7 @@ class StudentsService:
 
         write_db(raw_data)
 
+    # TODO
     @staticmethod
     def update_course(id: str, course_data: CourseSchema):
         raw_data = read_db()
@@ -175,7 +181,7 @@ class StudentsService:
         updated_course_dict = jsonable_encoder(course_data.model_dump(exclude_computed_fields=True))
 
         raw_data[student_idx]["courses"][course_idx] = updated_course_dict
-        validated_student = StudentSchema.model_validate(raw_data[student_idx])
+        validated_student = StudentInDB.model_validate(raw_data[student_idx])
 
         write_db(raw_data)
 

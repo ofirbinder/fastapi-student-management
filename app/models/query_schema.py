@@ -15,4 +15,5 @@ class QueryParams(AppBaseModel):
             "Supported fields: id, name, birth_date, is_active, created_at."
         ),
         examples=["name", "-created_at"],
+        alias="sort_by",
     )

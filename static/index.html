@@ -337,7 +337,10 @@
           method: 'PATCH',
           path: '/students/{id}/courses',
           desc: 'Update Grade',
-          body: { course_data: { name: 'PYTHON', grade: 100 } },
+          body: {
+            name: 'PYTHON',
+            grade: 54,
+          },
         },
         {
           method: 'DELETE',

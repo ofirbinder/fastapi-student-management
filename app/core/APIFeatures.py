@@ -1,5 +1,5 @@
 from app.core.DomainError import InvalidAPIFeaturesParamsError
-from app.models.student_schema import StudentSchema
+from app.models.student_in_db import StudentInDB
 
 
 class APIFeatures:
@@ -17,7 +17,7 @@ class APIFeatures:
             )
         reverse = sort_by.startswith("-")
         field = sort_by.lstrip("-")
-        if field not in StudentSchema.model_fields:
+        if field not in StudentInDB.model_fields:
             raise InvalidAPIFeaturesParamsError(
                 f"Field '{field}' does not exist on student schema!"
             )
