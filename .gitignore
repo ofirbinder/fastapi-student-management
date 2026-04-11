@@ -17,10 +17,6 @@ ENV/
 .env*
 !.env.example
 
-### --- Databases --- ###
-# Exclude the local JSON database to keep the repository clean
-app/db/students.json
-
 ### --- VS Code --- ###
 # Ignore all VS Code settings...
 .vscode/*

@@ -1,0 +1,392 @@
+[
+  {
+    "id": "ST-001",
+    "name": "Ofir Binder",
+    "birth_date": "1994-05-15",
+    "address": {
+      "city": "Haifa",
+      "street": "Gdud Haivri",
+      "house_number": 68,
+      "zip_code": "3475000"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "PYTHON",
+        "grade": 95
+      },
+      {
+        "name": "DEVOPS",
+        "grade": null
+      },
+      {
+        "name": "DATABASE",
+        "grade": 87
+      }
+    ],
+    "created_at": "2026-04-08T18:30:00"
+  },
+  {
+    "id": "ST-002",
+    "name": "Eli Golan",
+    "birth_date": "1974-12-05",
+    "address": {
+      "city": "Nesher",
+      "street": "Gdud Haivri",
+      "house_number": 168,
+      "zip_code": "3475120"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "PYTHON",
+        "grade": 95
+      },
+      {
+        "name": "DOCKER",
+        "grade": 87
+      }
+    ],
+    "created_at": "2026-03-08T21:30:00"
+  },
+  {
+    "id": "ST-003",
+    "name": "Itay Cohen",
+    "birth_date": "1995-12-01",
+    "address": {
+      "city": "Jerusalem",
+      "street": "Jaffa",
+      "house_number": 12,
+      "zip_code": "9434200"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "DATABASE",
+        "grade": 45
+      }
+    ],
+    "created_at": "2026-04-08T18:40:00"
+  },
+  {
+    "id": "ST-004",
+    "name": "Maya Roz",
+    "birth_date": "2001-03-10",
+    "address": {
+      "city": "Rishon LeZion",
+      "street": "Herzl",
+      "house_number": 45,
+      "zip_code": "7528800"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "JAVASCRIPT",
+        "grade": null
+      }
+    ],
+    "created_at": "2026-04-08T18:45:00"
+  },
+  {
+    "id": "ST-005",
+    "name": "Yossi Avraham",
+    "birth_date": "1990-07-25",
+    "address": {
+      "city": "Beersheba",
+      "street": "Rager",
+      "house_number": 9,
+      "zip_code": "8489500"
+    },
+    "is_active": false,
+    "courses": [
+      {
+        "name": "DATABASE",
+        "grade": 78
+      }
+    ],
+    "created_at": "2026-04-08T18:50:00"
+  },
+  {
+    "id": "ST-006",
+    "name": "Adi Biton",
+    "birth_date": "1997-11-30",
+    "address": {
+      "city": "Netanya",
+      "street": "Binyamin",
+      "house_number": 22,
+      "zip_code": "4225500"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "PYTHON",
+        "grade": 50
+      }
+    ],
+    "created_at": "2026-04-08T18:55:00"
+  },
+  {
+    "id": "ST-007",
+    "name": "Ronen Katz",
+    "birth_date": "1992-01-14",
+    "address": {
+      "city": "Holon",
+      "street": "Sokolov",
+      "house_number": 5,
+      "zip_code": "5849100"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "DEVOPS",
+        "grade": 82
+      }
+    ],
+    "created_at": "2026-04-08T19:00:00"
+  },
+  {
+    "id": "ST-008",
+    "name": "Shira Agam",
+    "birth_date": "2000-09-05",
+    "address": {
+      "city": "Petah Tikva",
+      "street": "HaHagana",
+      "house_number": 33,
+      "zip_code": "4959100"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "DATABASE",
+        "grade": 94
+      }
+    ],
+    "created_at": "2026-04-08T19:05:00"
+  },
+  {
+    "id": "ST-009",
+    "name": "Omer Golan",
+    "birth_date": "1999-04-18",
+    "address": {
+      "city": "Ashdod",
+      "street": "Herzl",
+      "house_number": 88,
+      "zip_code": "7745200"
+    },
+    "is_active": true,
+    "courses": [],
+    "created_at": "2026-04-08T19:10:00"
+  },
+  {
+    "id": "ST-010",
+    "name": "Dana Tal",
+    "birth_date": "1996-06-27",
+    "address": {
+      "city": "Rehovot",
+      "street": "Herzl",
+      "house_number": 150,
+      "zip_code": "7645000"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "PYTHON",
+        "grade": null
+      }
+    ],
+    "created_at": "2026-04-08T19:15:00"
+  },
+  {
+    "id": "ST-011",
+    "name": "Galit Ohayon",
+    "birth_date": "1993-10-12",
+    "address": {
+      "city": "Eilat",
+      "street": "HaTmarim",
+      "house_number": 4,
+      "zip_code": "8810000"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "DEVOPS",
+        "grade": 91
+      }
+    ],
+    "created_at": "2026-04-08T19:20:00"
+  },
+  {
+    "id": "ST-012",
+    "name": "Erez Shani",
+    "birth_date": "1991-02-28",
+    "address": {
+      "city": "Giv'atayim",
+      "street": "Katznelson",
+      "house_number": 18,
+      "zip_code": "5321400"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "DATABASE",
+        "grade": 85
+      },
+      {
+        "name": "PYTHON",
+        "grade": null
+      }
+    ],
+    "created_at": "2026-04-08T19:25:00"
+  },
+  {
+    "id": "ST-013",
+    "name": "Liat Bar",
+    "birth_date": "2002-05-20",
+    "address": {
+      "city": "Herzliya",
+      "street": "Sokolov",
+      "house_number": 100,
+      "zip_code": "4649700"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "JAVASCRIPT",
+        "grade": 96
+      }
+    ],
+    "created_at": "2026-04-08T19:30:00"
+  },
+  {
+    "id": "ST-014",
+    "name": "Daniel Fridman",
+    "birth_date": "1994-11-11",
+    "address": {
+      "city": "Ramat Gan",
+      "street": "Bialik",
+      "house_number": 52,
+      "zip_code": "5243100"
+    },
+    "is_active": false,
+    "courses": [
+      {
+        "name": "PYTHON",
+        "grade": 40
+      }
+    ],
+    "created_at": "2026-04-08T19:35:00"
+  },
+  {
+    "id": "ST-015",
+    "name": "Tomer Ziv",
+    "birth_date": "1989-08-30",
+    "address": {
+      "city": "Ra'anana",
+      "street": "Ahuza",
+      "house_number": 201,
+      "zip_code": "4355600"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "DEVOPS",
+        "grade": null
+      }
+    ],
+    "created_at": "2026-04-08T19:40:00"
+  },
+  {
+    "id": "ST-016",
+    "name": "Shir Levi",
+    "birth_date": "1998-12-05",
+    "address": {
+      "city": "Kfar Saba",
+      "street": "Weizmann",
+      "house_number": 14,
+      "zip_code": "4424300"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "JAVASCRIPT",
+        "grade": 93
+      },
+      {
+        "name": "DATABASE",
+        "grade": null
+      }
+    ],
+    "created_at": "2026-04-08T19:45:00"
+  },
+  {
+    "id": "ST-017",
+    "name": "Amit Segal",
+    "birth_date": "1995-03-22",
+    "address": {
+      "city": "Modi'in",
+      "street": "Dam HaMaccabim",
+      "house_number": 9,
+      "zip_code": "7170000"
+    },
+    "is_active": true,
+    "courses": [],
+    "created_at": "2026-04-08T19:50:00"
+  },
+  {
+    "id": "ST-018",
+    "name": "Noam Dayan",
+    "birth_date": "1997-01-19",
+    "address": {
+      "city": "Hadera",
+      "street": "HaNassi",
+      "house_number": 11,
+      "zip_code": "3840200"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "PYTHON",
+        "grade": 82
+      }
+    ],
+    "created_at": "2026-04-08T19:55:00"
+  },
+  {
+    "id": "ST-019",
+    "name": "Hila Cohen",
+    "birth_date": "2000-07-07",
+    "address": {
+      "city": "Bat Yam",
+      "street": "HaAtzmaut",
+      "house_number": 30,
+      "zip_code": "5944100"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "DATABASE",
+        "grade": 54
+      }
+    ],
+    "created_at": "2026-04-08T20:00:00"
+  },
+  {
+    "id": "ST-020",
+    "name": "Barak Peleg",
+    "birth_date": "1992-04-04",
+    "address": {
+      "city": "Yavne",
+      "street": "HaDror",
+      "house_number": 2,
+      "zip_code": "8150400"
+    },
+    "is_active": true,
+    "courses": [
+      {
+        "name": "DEVOPS",
+        "grade": 94
+      }
+    ],
+    "created_at": "2025-04-08T20:05:00"
+  }
+]
